@@ -1,7 +1,7 @@
 DEFAULT_SOCKET_URL = 'http://www.hyperlocalcontext.com/notman';
 DEFAULT_ASSOCIATIONS_URL = 'http://www.hyperlocalcontext.com/associations/';
 
-angular.module('dashboard', [ 'btford.socket-io' ])
+angular.module('dashboard', [ 'btford.socket-io', 'reelyactive.cormorant' ])
 
   // Socket.io factory
   .factory('Socket', function(socketFactory) {
@@ -10,7 +10,8 @@ angular.module('dashboard', [ 'btford.socket-io' ])
 
 
   // Dashboard controller
-  .controller('DashCtrl', function($scope, $interval, $http, Socket) {
+  .controller('DashCtrl', function($scope, $interval, $http, Socket,
+                                   cormorant) {
 
     $scope.event = {};
 
