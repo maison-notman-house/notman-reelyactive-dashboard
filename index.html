@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.5.0/angular-sanitize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
     <script type="text/javascript" src="js/socket.min.js"></script>
@@ -40,10 +41,44 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-6">
-            <canvas id="chart" width="400" height="400" style="width: 100%"/>
+            <div class="row">
+              <table class="table">
+                <caption> REAL-TIME DEVICE DISTRIBUTION BY FLOOR </caption>
+              </table>
+            </div>
+            <div class="row">
+              <canvas id="chart" class="chart"/>
+            </div>
+            <div class="row">
+              <div class="chart-legend" ng-bind-html="chartLegend"></div>
+            </div>
           </div>
           <div class="col-md-6">
-            <pre>{{stats}}</pre>
+            <table class="table table-hover">
+              <caption> REAL-TIME EVENT STREAM </caption>
+              <thead>
+                <tr>
+                  <th> Transmitter ID </th>
+                  <th> Event </th>
+                  <th> Receiver ID </th>
+                  <th> RSSI </th>
+                  <th> Timestamp </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="(id, event) in events">
+                  <td> <tt> {{event.tiraid.identifier.value}} </tt> </td>
+                  <td> {{event.type}} </td>
+                  <td>
+                    <tt>
+                      {{event.tiraid.radioDecodings[0].identifier.value}}
+                    </tt>
+                  </td>
+                  <td> {{event.tiraid.radioDecodings[0].rssi}} </td>
+                  <td> {{event.tiraid.timestamp}} </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

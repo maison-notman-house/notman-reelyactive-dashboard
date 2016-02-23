@@ -105,6 +105,39 @@ body {
 }
 /* End Bootstrap 3 tabs override */
 
+/* Begin ChartJS */
+.chart {
+  padding: 0;
+  margin: auto;
+  width: 640px;
+  height: 640px;
+  max-width: 96%;
+  max-height: 96%;
+  display: block;
+}
+
+.chart-legend {
+  float: right;
+}
+
+.chart-legend ul {
+  padding: 1em;
+  list-style-type: none;
+}
+
+.chart-legend li {
+  display: inline;
+}
+
+.chart-legend li span {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  margin-left: 1em;
+}
+/* End ChartJS */
+
 .footer {
   position: absolute;
   bottom: 0;
