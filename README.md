@@ -10,7 +10,7 @@ This is a work in progress...
 Installation
 ------------
 
-Again, work in progress...
+Clone the repository and open index.html in your favourite browser.
 
 
 License
