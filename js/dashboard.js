@@ -25,15 +25,15 @@ angular.module('dashboard', [ 'btford.socket-io', 'reelyactive.beaver',
 
 
     // Action triggers: appearance, displacement and disappearance
-    Socket.on('appearance', function(data) {
+    beaver.on('appearance', function(data) {
       updateChart();
       updateEvents('appearance', data);
     });
-    Socket.on('displacement', function(data) {
+    beaver.on('displacement', function(data) {
       updateChart();
       updateEvents('displacement', data);
     });
-    Socket.on('disappearance', function(data) {
+    beaver.on('disappearance', function(data) {
       updateChart();
       updateEvents('disappearance', data);
     });
