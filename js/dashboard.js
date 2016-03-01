@@ -16,6 +16,7 @@ angular.module('dashboard', [ 'btford.socket-io', 'reelyactive.beaver',
                                    beaver, cormorant) {
 
     var chart;
+    var stories = {};
     $scope.devices = beaver.getDevices();
     $scope.stats = beaver.getStats();
     $scope.events = [];
@@ -28,10 +29,15 @@ angular.module('dashboard', [ 'btford.socket-io', 'reelyactive.beaver',
     beaver.on('appearance', function(data) {
       updateChart();
       updateEvents('appearance', data);
+      updateStories(data);
+    });
+    beaver.on('keep-alive', function(data) {
+      updateStories(data);
     });
     beaver.on('displacement', function(data) {
       updateChart();
       updateEvents('displacement', data);
+      updateStories(data);
     });
     beaver.on('disappearance', function(data) {
       updateChart();
@@ -95,6 +101,18 @@ angular.module('dashboard', [ 'btford.socket-io', 'reelyactive.beaver',
       var length = $scope.events.unshift({ type: type, tiraid: data.tiraid });
       if(length > EVENT_HISTORY) {
         $scope.events.pop();
+      }
+    }
+
+    function updateStories(data) {
+      if(data && data.hasOwnProperty('associations') &&
+         data.associations.hasOwnProperty('url')) {
+        var url = data.associations.url;
+        if(!stories.hasOwnProperty(url)) {
+          cormorant.getStory(url, function(story) {
+            stories[url] = story;
+          });
+        }
       }
     }
 
