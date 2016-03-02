@@ -10,10 +10,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.5.0/angular-sanitize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="js/highcharts-ng.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash.min.js"></script>
     <script type="text/javascript" src="js/socket.min.js"></script>
     <script type="text/javascript" src="js/beaver.js"></script>
     <script type="text/javascript" src="js/cormorant.js"></script>
     <script type="text/javascript" src="js/dashboard.js"></script>
+    <script type="text/javascript" src="js/mnubograph.js"></script>
   </head>
   <body ng-app="dashboard">
 	  <div ng-controller="DashCtrl">
@@ -81,7 +85,15 @@
             </table>
           </div>
         </div>
+        <div class="row">
+            <div style="padding: 5px; width:1255px height:1255px">
+              <img ng-if="graphData.length > 0" src="images/mnubo.png"
+                   style="width:100px;height:50;">
+              <graph go-model="graphData"></graph>
+            </div>
+        </div>
       </div>
+
       <footer class="footer">
         <a> reelyActive Notman House Dashboard </a>
         &nbsp; | &nbsp;
