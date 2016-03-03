@@ -4,13 +4,23 @@ notman-reelyactive-dashboard
 A dashboard for Notman House based on the reelyActive platform
 --------------------------------------------------------------
 
-This is a work in progress...
+Learn more about the [#HackTheHouse project](http://notman.ca/hackthehouse/) and, specifically, [how reelyActive technology applies](http://reelyactive.github.io/hackthehouse.html).
+
+Try the dashboard live at [maison-notman-house.github.io/notman-reelyactive-dashboard](http://maison-notman-house.github.io/notman-reelyactive-dashboard/)
 
 
 Installation
 ------------
 
 Clone the repository and open index.html in your favourite browser.
+
+
+Contributors
+------------
+
+reelyActive would like to thank all additional contributors to this project, namely:
+- Marek from [Lab Zed](http://www.labzed.com/)
+- Diego from [mnubo](http://mnubo.com/)
 
 
 License
