@@ -1,9 +1,11 @@
 DEFAULT_SOCKET_URL = 'http://www.hyperlocalcontext.com/notman';
 DEFAULT_ASSOCIATIONS_URL = 'http://www.hyperlocalcontext.com/associations/';
+DEFAULT_MNUBO_URL = 'https://reelyactive.sandbox.mnubo.com';
 EVENT_HISTORY = 10;
 
 angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
-  'reelyactive.cormorant', 'ngSanitize', 'highcharts-ng'
+                             'reelyactive.cormorant', 'ngSanitize',
+                             'highcharts-ng'
 ])
 
 // Socket.io factory
@@ -17,7 +19,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   $rootScope.graphData = [];
   this.token = "Bearer eyJhbGciOiJSUzI1NiJ9.eyJzY29wZSI6WyJBTEwiXSwiYXBwdHlwZSI6IlNBTkRCT1giLCJuYW1lc3BhY2UiOiJyZWVseWFjdGl2ZSIsIndzbzJhY2Nlc3N0b2tlbmlkIjoiWTJVdlpTZ1FxQWRsdllSd3JlWXFoS3pnQUlNNHJ6WVdSRTNCNmZ1U2tnaHFTdHgxTkEiLCJleHAiOjE0NjA4MzE3ODcsImF1dGhvcml0aWVzIjpbIlJPTEVfQ0xJRU5UIl0sImp0aSI6ImI0MTQ5YTA0LTk2MGQtNDZhNy04YmZjLWY1OGRjNTQ5MTc4MSIsImNsaWVudF9pZCI6IlJxNVhsZ0VvdklsblQ3aU9OMmxjbzl5aEhNUTNuSDhJcmRCd0ZsdGRSc3c3WGttb0hBIiwiYWNjb3VudCI6InJlZWx5YWN0aXZlIiwidXNlci1hZ2VudCI6Ik1vemlsbGEvNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDEwXzExXzMpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS80OC4wLjI1NjQuMTE2IFNhZmFyaS81MzcuMzYifQ.EDMMdwU_y6qDjiMpzPAGFxan9Zp0rDYCz4_8u5WP8RllBXegasT8nTnKcdCCNI25OlppQGiQcan5Io_M-nrdvUR3tZouUaWbGtGxznHLIyXYtOro3nH0o92eMoXOHXYJ9tn0W-hFFPjhx8_KbYIawYSAvAK_ZvJY_BGlw46oXQ6GvHCiJhd5vajQtfio9gLW8uA3-4665UAlmKU1VrDs-RKEDJ9aEg4dtkloMPcC52O7tkhl5bT-7n7K-egoyZUILaJN75JEUxfsicMc-r2uHNZeoaDZT8AZjQpFZ04fbKqpc7L9M_LDopODcqL9Lu4naCHCxw0DhbLPcTMjMTAqh7zsghhjy0x8lworMcDlXy5X1cTDYS-C-V2VfJuKf6VyLdLeHoJRFchqQB_by_gCVRd0aXGgXGymclvDEUO_51KX6wmGmf_jQHp0T1CzRGq1J_2Zpi41mEw2wJ0lEisic24uxWXfvmMFd1arcqnMgIQxJnXqoyxmBW3dHi9qfMAeJaldeZLHkOLMXgF80aWI-kPAdq0bZudWz8qOv3ro_PjQE3rNh_LB2-WT9TKVK2m94nTM4l25VoxO4J50wT6HVd6BtFW7quQDITx-kSzg0894uA3fJDtCNygECR3vfzwsQ9u-mo67sB3Xm2yKkGOgoRvXKirY36YAUIs82B5jIws"
-  this.endPoint = "https://reelyactive.sandbox.mnubo.com";
+  this.endPoint = DEFAULT_MNUBO_URL;
   this.headers = {
     'Authorization': this.token,
     'Content-Type': 'application/json',
@@ -39,6 +41,22 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   this.notmanRequest = function() {
 
+    var now = new Date();
+
+    var t_day = now.getDate();
+    var t_month = now.getMonth();
+    var t_year = now.getFullYear();
+    var today_from = new Date(t_year,t_month,t_day).toISOString();
+    var today_to = now.toISOString();
+
+
+    var yesterday = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+    var y_day = yesterday.getDate();
+    var y_month = yesterday.getMonth();
+    var y_year = yesterday.getFullYear();
+    var yesterday_from = new Date(y_year,y_month,y_day).toISOString();
+    var yesterday_to = new Date(y_year,y_month,y_day,23,59,59).toISOString();
+
 
     var query1 = {
       "from": "event",
@@ -49,8 +67,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
           }
         }, {
           "x_timestamp": {
-            "dateBetween": "2016-03-01T00:00:00-05:00",
-            "and": "2016-03-01T23:59:59-05:00"
+            "dateBetween": yesterday_from,
+            "and": yesterday_to
           }
         }]
       },
@@ -73,8 +91,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
           }
         }, {
           "x_timestamp": {
-            "dateBetween": "2016-03-02T00:00:00-05:00",
-            "and": "2016-03-02T23:59:59-05:00"
+            "dateBetween": today_from,
+            "and": today_to
           }
         }]
       },
@@ -117,7 +135,6 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
 
 })
-
 .run(function($interval, mnubo) {
   $interval(function() {
 
