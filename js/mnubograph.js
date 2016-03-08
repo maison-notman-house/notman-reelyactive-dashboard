@@ -18,6 +18,12 @@ angular.module('dashboard')
     .controller('GraphCtrl', function($scope) {
         var graph = this;
 
+        Highcharts.setOptions({
+                        global: {
+                          useUTC: false
+                        }
+                      });
+
         var color = ['#00A2DF','#7a7b7d'];
         var title = ['yesterday','today'];
 
@@ -27,50 +33,62 @@ angular.module('dashboard')
                 var series = [];
                 var categories = [];
 
+                var day = new Date($scope.goModel[1].rows[$scope.goModel[1].rows.length-1][0]);
+
                 _.each($scope.goModel, function(data,key) {
+                    var out = _.map(data.rows, function(row) { 
+
+                        var b = new Date(row[0]);
+                        var c = new Date(day.getYear(),day.getMonth(),day.getDay(), b.getHours(), b.getMinutes())
+                        return [c.getTime(), row[1]]; 
+                    });
                     series.push({
-                        data: _.map(data.rows, function(row) {
-                            categories.push(row[0]);
-                            return row[1];
-                        }),
+                        data: out,
                         turboThreshold: 0,
                         color : color[key],
                         name: title[key]
                     });
                 });
-                categories = _.uniq(categories);
+
                 var data = _.first($scope.goModel);
                 var xInformation = _.first(data.columns);
 
                 var xAxis = {
-                    /*categories: categories,*/
-                    categories: _.map(categories, function(row) {return row.substring(row.length-8,11);}),
-                    title: { text: xInformation.label }
+                    type: 'datetime',
+                    title: { text: xInformation.label },
                 };
-                if (xInformation.type === 'datetime') {
-                    xAxis.type = xInformation.type;
-
-                }
 
                 var yInformation = data.columns[1];
                 var yAxis = {
-                    title: { text: yInformation.label }
+                    title: { text: 'Activity Events' }
                 };
-                $scope.chartConfig = {
 
+
+
+                $scope.chartConfig = {
                     options: {
                         //This is the Main Highcharts chart config. Any Highchart options are valid here.
                         //will be overriden by values specified below.
 
                         chart: {
                             type: 'line',
-                            animation: false
+                            zoomType: 'x',
+                            panning: true,
+                            panKey: 'shift'
+                        },
+                        plotOptions: {
+                            series: {
+                                animation: false 
+                            }
                         },
                         tooltip: {
                             style: {
                                 padding: 10,
                                 fontWeight: 'bold'
                             }
+                        },
+                        credits: {
+                            enabled: false
                         }
 
                     },
@@ -81,9 +99,10 @@ angular.module('dashboard')
                     series: series,
                     //Title configuration (optional)
                     title: {
-                        text: 'mnubo SmartObjects Platform'
+                        text: 'Daily Activity Level via mnubo SmartObjects Platform'
                     }
                 };
+
             } else {
                 $scope.chartConfig = {};
             }
