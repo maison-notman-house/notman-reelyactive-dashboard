@@ -241,6 +241,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
           chart.segments[1].value++; // Second floor
           break;
         case '001bc509408100df':
+        case '001bc5094081010b':
+        case '001bc5094081010c':
           chart.segments[2].value++; // Third floor
           break;
       }
