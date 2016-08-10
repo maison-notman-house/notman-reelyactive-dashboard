@@ -138,6 +138,12 @@ body {
 }
 /* End ChartJS */
 
+.blue-full {
+  background-color: #0770a2;
+  min-height: calc(~"100vh - 150px");
+  overflow: auto;
+}
+
 .footer {
   position: absolute;
   bottom: 0;
