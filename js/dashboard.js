@@ -71,4 +71,14 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   function updateStories(url) {
     cormorant.getStory(url, function() {});
   }
+
+  // Verify if the device's story has been fetched
+  $scope.hasFetchedStory = function(device) {
+    return $scope.stories.hasOwnProperty(device.deviceUrl);
+  };
+
+  // Get the story corresponding to the given device
+  $scope.getStory = function(device) {
+    return $scope.stories[device.deviceUrl];
+  };
 });
