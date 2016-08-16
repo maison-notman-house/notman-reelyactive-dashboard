@@ -45,10 +45,12 @@
         <div class="row">
           <div class="col-md-12">
             <div class="well blue-full">
-              <div ng-repeat="(id, device) in devices | orderBy:'-rssi'"
-                   style="float:left; height:300px">
-                <bubble ng-if="hasFetchedStory(device)"
-                        json="getStory(device)" size="240px"></bubble>
+              <div ng-repeat="(name, directory) in directories">
+                <div ng-repeat="(id, device) in directory | orderBy:'-rssi'"
+                     style="float:left; height:300px">
+                  <bubble ng-if="hasFetchedStory(device)"
+                          json="getStory(device)" size="240px"></bubble>
+                </div>
               </div>
             </div>
           </div>

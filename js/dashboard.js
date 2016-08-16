@@ -6,7 +6,7 @@
 
 // Constant definitions
 DEFAULT_SOCKET_URL = 'http://www.hyperlocalcontext.com/notman';
-DEFAULT_ASSOCIATIONS_URL = 'http://www.hyperlocalcontext.com/associations/';
+MAX_RSSI = 255;
 
 
 /**
@@ -43,6 +43,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.devices = beaver.getDevices();
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
+  $scope.directories = {};
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -65,11 +66,47 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   function handleEvent(event) {
     updateStories(event.deviceUrl);
     updateStories(event.receiverUrl);
+    updateDirectories(event);
   }
 
   // Update the collection of stories
   function updateStories(url) {
     cormorant.getStory(url, function() {});
+  }
+
+  // Update the directories of events
+  function updateDirectories(event) {
+    var directory = event.receiverDirectory;
+    var deviceId = event.deviceId;
+
+    // Update existing directories
+    for(currentDirectory in $scope.directories) {
+      if((directory === currentDirectory) &&
+         (event.event !== 'disappearance')) {
+        addReceiver(directory, event.receiverId, event.receiverUrl);
+        $scope.directories[currentDirectory][deviceId] = event;
+      }
+      else if($scope.directories[currentDirectory].hasOwnProperty(deviceId)) {
+        delete $scope.directories[currentDirectory][deviceId];
+      }
+    }
+
+    // Create new directory and add both receiver and event
+    if(!$scope.directories.hasOwnProperty(directory)) {
+      $scope.directories[directory] = {};
+      addReceiver(directory, event.receiverId, event.receiverUrl);
+      $scope.directories[directory][deviceId] = event;
+    }
+  }
+
+  // Add the receiver to the given directory
+  function addReceiver(directory, receiverId, receiverUrl) {
+    if(!$scope.directories[directory].hasOwnProperty(receiverId)) {
+      $scope.directories[directory][receiverId] = {
+        deviceUrl: receiverUrl,
+        rssi: MAX_RSSI
+      };
+    }
   }
 
   // Verify if the device's story has been fetched
