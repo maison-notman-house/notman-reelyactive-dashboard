@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="style/bubble.css">
     <link rel="stylesheet" href="style/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.0.2/ui-bootstrap-tpls.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.5.0/angular-sanitize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script type="text/javascript" src="js/socket.min.js"></script>
     <script type="text/javascript" src="js/beaver.js"></script>
     <script type="text/javascript" src="js/cormorant.js"></script>
+    <script type="text/javascript" src="js/bubble.js"></script>
     <script type="text/javascript" src="js/cuttlefish.js"></script>
     <script type="text/javascript" src="js/dashboard.js"></script>
   </head>
@@ -48,7 +49,7 @@
               <div ng-repeat="(name, directory) in directories">
                 <div ng-repeat="(id, device) in directory | orderBy:'-rssi'"
                      style="float:left; height:300px">
-                  <bubble ng-if="hasFetchedStory(device)"
+                  <bubble ng-if="hasFetchedStory(device)" toggle="false"
                           json="getStory(device)" size="240px"></bubble>
                 </div>
               </div>

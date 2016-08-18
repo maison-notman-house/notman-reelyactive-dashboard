@@ -20,16 +20,16 @@ UNSUPPORTED_STORY_JSON = {
 };
 
 
-angular.module('reelyactive.cuttlefish', [])
+angular.module('reelyactive.cuttlefish', ['ui.bootstrap'])
 
   .directive('bubble', function() {
 
     function link(scope, element, attrs) {
 
       function update() {
-        scope.toggle = 0;
         scope.types = [];
         scope.size = scope.size || DEFAULT_BUBBLE_SIZE;
+        scope.toggle = scope.toggle || false;
 
         if(scope.json && scope.json.hasOwnProperty("@graph")) {
           var graph = scope.json["@graph"];
@@ -48,7 +48,7 @@ angular.module('reelyactive.cuttlefish', [])
                 scope.types.push(TYPE_PLACE);
                 break;
             }
-            scope.itemID = graph[cItem]["@id"];
+            scope.itemID = Bubble.generateID(graph[cItem]["@id"]);
           }
         }
         else {
@@ -56,7 +56,9 @@ angular.module('reelyactive.cuttlefish', [])
           scope.types.push(TYPE_PRODUCT);
         }
         scope.current = scope.types[0];
+        var thisBubble = new Bubble(scope);
       }
+      
 
       function formatItem(item, type) {
         if(!item.hasOwnProperty("schema:image")) {
@@ -75,7 +77,8 @@ angular.module('reelyactive.cuttlefish', [])
       restrict: "E",
       scope: {
         json: "=",
-        size: "@"
+        size: "@",
+        toggle: "="
       },
       link: link,
       templateUrl: BUBBLE_TEMPLATE_URL
