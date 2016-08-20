@@ -44,6 +44,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
   $scope.directories = {};
+  $scope.featuredDirectory = null;
+  $scope.featuredStory = null;
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -71,7 +73,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   // Update the collection of stories
   function updateStories(url) {
-    cormorant.getStory(url, function() {});
+    cormorant.getStory(url, function(story, url) {});
   }
 
   // Update the directories of events
@@ -118,4 +120,47 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.getStory = function(device) {
     return $scope.stories[device.deviceUrl];
   };
+
+  // Verify if the story includes a Person
+  function includesPerson(story) {
+    if(story && story.hasOwnProperty('@graph')) {
+      for(var cIndex = 0; cIndex < story['@graph'].length; cIndex++) {
+        if(story['@graph'][cIndex].hasOwnProperty('@type') &&
+           (story['@graph'][cIndex]['@type'] === 'schema:Person')) {
+          return true;
+        }
+      }
+    }
+    return false
+  }
+
+  // Update the featured story
+  function updateFeaturedStory() {
+    var newFeaturedStory = $scope.featuredStory;
+    for(currentDevice in $scope.devices) {
+      var device = $scope.devices[currentDevice];
+      if($scope.stories.hasOwnProperty(device.deviceUrl) &&
+         includesPerson($scope.stories[device.deviceUrl])) {
+        newFeaturedStory = $scope.stories[device.deviceUrl];
+      }
+    }
+    $scope.featuredStory = newFeaturedStory;
+  }
+
+  // Update the featured directory
+  function updateFeaturedDirectory() {
+    var people = 0;
+    var newFeaturedDirectory = $scope.featuredDirectory;
+    for(currentDirectory in $scope.directories) {
+      // TODO: make a function that actually counts people, not everything
+      if(Object.keys($scope.directories[currentDirectory]).length > people) {
+        newFeaturedDirectory = $scope.directories[currentDirectory];
+        people = Object.keys($scope.directories[currentDirectory]).length;
+      }
+    }
+    $scope.featuredDirectory = newFeaturedDirectory;
+  }
+
+  setInterval(updateFeaturedStory, 4000);
+  setInterval(updateFeaturedDirectory, 8000);
 });
