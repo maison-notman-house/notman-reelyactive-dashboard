@@ -24,8 +24,8 @@
         <div class="col-md-8">
           <div class="well blue-full" style="min-height:720px; max-height:720px; overflow:hidden">
             <br><br>
-            <bubble ng-if="featuredStory" toggle="false" json="featuredStory"
-                    size="480px"></bubble>
+            <bubble ng-repeat="story in featuredStories" toggle="false"
+                    json="story" size="480px"></bubble>
           </div>
         </div>
         <div class="col-md-4">

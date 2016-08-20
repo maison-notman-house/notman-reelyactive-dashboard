@@ -45,7 +45,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.directories = {};
   $scope.featuredDirectory = null;
-  $scope.featuredStory = null;
+  $scope.featuredStories = [];
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -131,36 +131,45 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
         }
       }
     }
-    return false
+    return false;
   }
 
-  // Update the featured story
-  function updateFeaturedStory() {
-    var newFeaturedStory = $scope.featuredStory;
+  // Update the featured stories
+  function updateFeaturedStories() {
+    var candidateStories = [];
     for(currentDevice in $scope.devices) {
       var device = $scope.devices[currentDevice];
       if($scope.stories.hasOwnProperty(device.deviceUrl) &&
          includesPerson($scope.stories[device.deviceUrl])) {
-        newFeaturedStory = $scope.stories[device.deviceUrl];
+        candidateStories.push($scope.stories[device.deviceUrl]);
       }
     }
-    $scope.featuredStory = newFeaturedStory;
+    $scope.featuredStories = candidateStories;
   }
 
-  // Update the featured directory
+  // Update the featured directory, toggling between the two with most people
   function updateFeaturedDirectory() {
     var people = 0;
     var newFeaturedDirectory = $scope.featuredDirectory;
-    for(currentDirectory in $scope.directories) {
-      // TODO: make a function that actually counts people, not everything
-      if(Object.keys($scope.directories[currentDirectory]).length > people) {
-        newFeaturedDirectory = $scope.directories[currentDirectory];
-        people = Object.keys($scope.directories[currentDirectory]).length;
+    for(cDirectory in $scope.directories) {
+      var currentPeople = 0;
+      var currentDirectory = $scope.directories[cDirectory];
+      for(cDevice in currentDirectory) {
+        var deviceUrl = currentDirectory[cDevice].deviceUrl;
+        if(includesPerson($scope.stories[deviceUrl])) {
+          currentPeople++;
+        }
+      }
+      if((currentPeople > people) &&
+         (currentDirectory !== $scope.featuredDirectory)) {
+        newFeaturedDirectory = currentDirectory;
       }
     }
     $scope.featuredDirectory = newFeaturedDirectory;
   }
 
-  setInterval(updateFeaturedStory, 4000);
+  updateFeaturedStories();
+  updateFeaturedDirectory();
+  setInterval(updateFeaturedStories, 4000);
   setInterval(updateFeaturedDirectory, 8000);
 });
