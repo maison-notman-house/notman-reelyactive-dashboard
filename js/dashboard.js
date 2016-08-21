@@ -7,6 +7,15 @@
 // Constant definitions
 DEFAULT_SOCKET_URL = 'http://www.hyperlocalcontext.com/notman';
 MAX_RSSI = 255;
+DOUGHNUT_OPTIONS = {
+  legend: {
+    display: true,
+    labels: {
+      fontSize: 24,
+      fontColor: "#fff"
+    }
+  }
+};
 
 
 /**
@@ -16,10 +25,12 @@ MAX_RSSI = 255;
  * - beaver, cormorant and cuttlefish (reelyActive)
  * - socket.io (btford)
  * - ngSanitize (angular)
+ * - chart.js (jtblin)
  */
 angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
                              'reelyactive.cormorant',
-                             'reelyactive.cuttlefish', 'ngSanitize'])
+                             'reelyactive.cuttlefish', 'ngSanitize',
+                             'chart.js'])
 
 
 /**
@@ -45,6 +56,10 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
   $scope.featuredDirectory = null;
+  $scope.doughnutLabels = [ '3', '2', '1', 'Cafe' ];
+  $scope.doughnutData = [ 0, 0, 0, 0 ];
+  $scope.doughnutColors = [ '#83b7d1', '#0770a2', '#043851', '#ff6900' ];
+  $scope.doughnutOptions = DOUGHNUT_OPTIONS;
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -52,16 +67,19 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   // Handle events pre-processed by beaver.js
   beaver.on('appearance', function(event) {
     handleEvent(event);
+    updateDoughnut(event);
     beaver.addDeviceProperty(event.deviceId, 'featured', false);
   });
   beaver.on('displacement', function(event) {
     handleEvent(event);
+    updateDoughnut(event);
   });
   beaver.on('keep-alive', function(event) {
     handleEvent(event);
   });
   beaver.on('disappearance', function(event) {
     handleEvent(event);
+    updateDoughnut(event);
   });
 
   // Handle an event
@@ -88,6 +106,28 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
                                     story['@graph'][0]['schema:image']);
       }
     });
+  }
+
+  // Update the doughnut chart
+  function updateDoughnut(event) {
+    $scope.doughnutData[0] = getNumberOfDirectoryDevices('notman:third:west')
+                         + getNumberOfDirectoryDevices('notman:third:centre')
+                         + getNumberOfDirectoryDevices('notman:third:east');
+    $scope.doughnutData[1] = getNumberOfDirectoryDevices('notman:second:west')
+                         + getNumberOfDirectoryDevices('notman:second:centre')
+                         + getNumberOfDirectoryDevices('notman:second:east');
+    $scope.doughnutData[2] = getNumberOfDirectoryDevices('notman:first:west')
+                         + getNumberOfDirectoryDevices('notman:first:centre')
+                         + getNumberOfDirectoryDevices('notman:first:east');
+    $scope.doughnutData[3] = getNumberOfDirectoryDevices('notman:cafe');
+  }
+
+  // Get the number of devices in the given directory
+  function getNumberOfDirectoryDevices(directory) {
+    if(!$scope.directories.hasOwnProperty(directory)) {
+      return 0;
+    }
+    return Object.keys($scope.directories[directory].devices).length;
   }
 
   // Verify if the story includes a Person
