@@ -45,7 +45,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.directories = {};
   $scope.featuredDirectory = null;
-  $scope.featuredStories = [];
+  $scope.featuredStories = {};
+  $scope.featuredStoryUrl = null;
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -62,6 +63,9 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   });
   beaver.on('disappearance', function(event) {
     handleEvent(event);
+    if($scope.featuredStories.hasOwnProperty(event.deviceUrl)) {
+      delete $scope.featuredStories[event.deviceUrl];
+    }
   });
 
   // Handle an event
@@ -69,11 +73,18 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     updateStories(event.deviceUrl);
     updateStories(event.receiverUrl);
     updateDirectories(event);
+    $scope.numberOfDevices = Object.keys($scope.devices).length;
   }
 
   // Update the collection of stories
   function updateStories(url) {
-    cormorant.getStory(url, function(story, url) {});
+    cormorant.getStory(url, function(story, url) {
+      if(includesPerson(story) &&
+         !$scope.featuredStories.hasOwnProperty(url)) {
+        $scope.featuredStories[url] = story;
+        $scope.featuredStoryUrl = url;
+      }
+    });
   }
 
   // Update the directories of events
@@ -98,6 +109,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
       $scope.directories[directory] = {};
       addReceiver(directory, event.receiverId, event.receiverUrl);
       $scope.directories[directory][deviceId] = event;
+      $scope.featuredDirectory = $scope.directories[directory];
     }
   }
 
@@ -121,6 +133,11 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     return $scope.stories[device.deviceUrl];
   };
 
+  // Does the given URL represent the featured story?
+  $scope.isFeaturedStory = function(url) {
+    return ($scope.featuredStoryUrl === url);
+  };
+
   // Verify if the story includes a Person
   function includesPerson(story) {
     if(story && story.hasOwnProperty('@graph')) {
@@ -134,21 +151,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     return false;
   }
 
-  // Update the featured stories
-  function updateFeaturedStories() {
-    var candidateStories = [];
-    for(currentDevice in $scope.devices) {
-      var device = $scope.devices[currentDevice];
-      if($scope.stories.hasOwnProperty(device.deviceUrl) &&
-         includesPerson($scope.stories[device.deviceUrl])) {
-        candidateStories.push($scope.stories[device.deviceUrl]);
-      }
-    }
-    $scope.featuredStories = candidateStories;
-  }
-
-  // Update the featured directory, toggling between the two with most people
-  function updateFeaturedDirectory() {
+  // Update the featured directory and story
+  function updateFeatured() {
     var people = 0;
     var newFeaturedDirectory = $scope.featuredDirectory;
     for(cDirectory in $scope.directories) {
@@ -166,10 +170,12 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
       }
     }
     $scope.featuredDirectory = newFeaturedDirectory;
+
+    var featuredStoryUrls = Object.keys($scope.featuredStories);
+    var featuredStoryIndex = Math.floor(Math.random() *
+                                        featuredStoryUrls.length);
+    $scope.featuredStoryUrl = featuredStoryUrls[featuredStoryIndex];
   }
 
-  updateFeaturedStories();
-  updateFeaturedDirectory();
-  setInterval(updateFeaturedStories, 4000);
-  setInterval(updateFeaturedDirectory, 8000);
+  setInterval(updateFeatured, 8000);
 });

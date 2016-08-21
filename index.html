@@ -22,14 +22,19 @@
 	  <div ng-controller="DashCtrl" class="container-fluid">
       <div class="row">
         <div class="col-md-8">
-          <div class="well blue-full" style="min-height:720px; max-height:720px; overflow:hidden">
+          <div class="well blue-full" style="min-height:700px; max-height:700px; overflow:hidden">
             <br><br>
-            <bubble ng-repeat="story in featuredStories" toggle="false"
-                    json="story" size="480px"></bubble>
+            <bubble ng-repeat="(url, story) in featuredStories"
+                    toggle="false" json="story" size="480px"
+                    ng-show="isFeaturedStory(url)"></bubble>
           </div>
         </div>
         <div class="col-md-4">
           <div class="well blue-full" style="min-height:720px; max-height:720px; overflow:hidden">
+            <br><br><br><br>
+            <h1 class="text-center" style="color:#fff; font-size:24em">
+              {{numberOfDevices}}
+            </h1>
           </div>
         </div>
       </div>
