@@ -57,7 +57,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.featuredDirectory = null;
   $scope.doughnutLabels = [ '3', '2', '1', 'Cafe' ];
-  $scope.doughnutData = [ 1, 1, 1, 1 ];
+  $scope.doughnutData = [ 0, 0, 0, 0 ];
   $scope.doughnutColors = [ '#83b7d1', '#0770a2', '#043851', '#ff6900' ];
   $scope.doughnutOptions = DOUGHNUT_OPTIONS;
 
@@ -110,16 +110,17 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   // Update the doughnut chart
   function updateDoughnut(event) {
-    $scope.doughnutData[0] = getNumberOfDirectoryDevices('notman:third:west')
+    /*$scope.doughnutData[0]*/ var third = getNumberOfDirectoryDevices('notman:third:west')
                          + getNumberOfDirectoryDevices('notman:third:centre')
                          + getNumberOfDirectoryDevices('notman:third:east');
-    $scope.doughnutData[1] = getNumberOfDirectoryDevices('notman:second:west')
+    /*$scope.doughnutData[1]*/ var second = getNumberOfDirectoryDevices('notman:second:west')
                          + getNumberOfDirectoryDevices('notman:second:centre')
                          + getNumberOfDirectoryDevices('notman:second:east');
-    $scope.doughnutData[2] = getNumberOfDirectoryDevices('notman:first:west')
+    /*$scope.doughnutData[2]*/ var first = getNumberOfDirectoryDevices('notman:first:west')
                          + getNumberOfDirectoryDevices('notman:first:centre')
                          + getNumberOfDirectoryDevices('notman:first:east');
-    $scope.doughnutData[3] = getNumberOfDirectoryDevices('notman:cafe');
+    /*$scope.doughnutData[3]*/ var cafe = getNumberOfDirectoryDevices('notman:cafe');
+    $scope.doughnutData = [ third, second, first, cafe ];
   }
 
   // Get the number of devices in the given directory
