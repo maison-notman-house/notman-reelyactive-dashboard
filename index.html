@@ -24,9 +24,9 @@
         <div class="col-md-8">
           <div class="well blue-full" style="min-height:640px; max-height:640px; overflow:hidden">
             <br><br>
-            <bubble ng-repeat="(url, story) in featuredStories"
-                    toggle="false" json="story" size="420px"
-                    ng-show="isFeaturedStory(url)"></bubble>
+            <bubble ng-repeat="(id, device) in devices" ng-if="device.person"
+                    toggle="false" json="device.story" size="420px"
+                    ng-show="device.featured"></bubble>
           </div>
         </div>
         <div class="col-md-4">
@@ -41,10 +41,14 @@
       <div class="row">
         <div class="col-md-12" style="min-height:320px; max-height:320px; overflow:hidden">
           <div class="well blue-full">
-            <div ng-if="featuredDirectory" ng-repeat="(id, device) in featuredDirectory | orderBy:'-rssi'"
+            <div ng-if="featuredDirectory" style="float:left; height:300px">
+              <img ng-src="{{featuredDirectory.imageUrl}}"
+                   class="img-responsive" height="240px">
+            </div>
+            <div ng-if="featuredDirectory" ng-repeat="(id, device) in featuredDirectory.devices | orderBy:'-person':false"
                  style="float:left; height:300px">
-                <bubble ng-if="hasFetchedStory(device)" toggle="false"
-                        json="getStory(device)" size="240px"></bubble>
+                <bubble ng-if="device.story" toggle="false"
+                        json="device.story" size="240px"></bubble>
               </div>
             </div>
         </div>

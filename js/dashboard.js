@@ -41,12 +41,10 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   // Variables accessible in the HTML scope
   $scope.devices = beaver.getDevices();
+  $scope.directories = beaver.getDirectories();
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
-  $scope.directories = {};
   $scope.featuredDirectory = null;
-  $scope.featuredStories = {};
-  $scope.featuredStoryUrl = null;
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -54,6 +52,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   // Handle events pre-processed by beaver.js
   beaver.on('appearance', function(event) {
     handleEvent(event);
+    beaver.addDeviceProperty(event.deviceId, 'featured', false);
   });
   beaver.on('displacement', function(event) {
     handleEvent(event);
@@ -63,80 +62,33 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   });
   beaver.on('disappearance', function(event) {
     handleEvent(event);
-    if($scope.featuredStories.hasOwnProperty(event.deviceUrl)) {
-      delete $scope.featuredStories[event.deviceUrl];
-    }
   });
 
   // Handle an event
   function handleEvent(event) {
-    updateStories(event.deviceUrl);
-    updateStories(event.receiverUrl);
-    updateDirectories(event);
+    updateDeviceStory(event.deviceId, event.deviceUrl);
+    updateDirectoryStory(event.receiverDirectory, event.receiverUrl);
     $scope.numberOfDevices = Object.keys($scope.devices).length;
   }
 
-  // Update the collection of stories
-  function updateStories(url) {
+  // Update the device's story
+  function updateDeviceStory(deviceId, url) {
     cormorant.getStory(url, function(story, url) {
-      if(includesPerson(story) &&
-         !$scope.featuredStories.hasOwnProperty(url)) {
-        $scope.featuredStories[url] = story;
-        $scope.featuredStoryUrl = url;
-      }
+      beaver.addDeviceProperty(deviceId, 'story', story);
+      beaver.addDeviceProperty(deviceId, 'person', includesPerson(story));
     });
   }
 
-  // Update the directories of events
-  function updateDirectories(event) {
-    var directory = event.receiverDirectory;
-    var deviceId = event.deviceId;
-
-    // Update existing directories
-    for(currentDirectory in $scope.directories) {
-      if((directory === currentDirectory) &&
-         (event.event !== 'disappearance')) {
-        addReceiver(directory, event.receiverId, event.receiverUrl);
-        $scope.directories[currentDirectory][deviceId] = event;
+  // Update the directory's story
+  function updateDirectoryStory(directory, url) {
+    cormorant.getStory(url, function(story, url) {
+      if(story) {
+        beaver.addDirectoryProperty(directory, 'story', story);
+        beaver.addDirectoryProperty(directory, 'imageUrl',
+                                    story['@graph'][0]['schema:image']);
       }
-      else if($scope.directories[currentDirectory].hasOwnProperty(deviceId)) {
-        delete $scope.directories[currentDirectory][deviceId];
-      }
-    }
-
-    // Create new directory and add both receiver and event
-    if(!$scope.directories.hasOwnProperty(directory)) {
-      $scope.directories[directory] = {};
-      addReceiver(directory, event.receiverId, event.receiverUrl);
-      $scope.directories[directory][deviceId] = event;
-      $scope.featuredDirectory = $scope.directories[directory];
-    }
+    });
   }
-
-  // Add the receiver to the given directory
-  function addReceiver(directory, receiverId, receiverUrl) {
-    if(!$scope.directories[directory].hasOwnProperty(receiverId)) {
-      $scope.directories[directory][receiverId] = {
-        deviceUrl: receiverUrl,
-        rssi: MAX_RSSI
-      };
-    }
-  }
-
-  // Verify if the device's story has been fetched
-  $scope.hasFetchedStory = function(device) {
-    return $scope.stories.hasOwnProperty(device.deviceUrl);
-  };
-
-  // Get the story corresponding to the given device
-  $scope.getStory = function(device) {
-    return $scope.stories[device.deviceUrl];
-  };
-
-  // Does the given URL represent the featured story?
-  $scope.isFeaturedStory = function(url) {
-    return ($scope.featuredStoryUrl === url);
-  };
 
   // Verify if the story includes a Person
   function includesPerson(story) {
@@ -151,6 +103,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     return false;
   }
 
+
   // Update the featured directory and story
   function updateFeatured() {
     var people = 0;
@@ -158,9 +111,8 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     for(cDirectory in $scope.directories) {
       var currentPeople = 0;
       var currentDirectory = $scope.directories[cDirectory];
-      for(cDevice in currentDirectory) {
-        var deviceUrl = currentDirectory[cDevice].deviceUrl;
-        if(includesPerson($scope.stories[deviceUrl])) {
+      for(cDevice in currentDirectory.devices) {
+        if(currentDirectory.devices[cDevice].person) {
           currentPeople++;
         }
       }
@@ -169,12 +121,24 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
         newFeaturedDirectory = currentDirectory;
       }
     }
-    $scope.featuredDirectory = newFeaturedDirectory;
+    if(newFeaturedDirectory !== $scope.featuredDirectory) {
+      $scope.featuredDirectory = newFeaturedDirectory;
+    }
+    else {
+      var directories = Object.keys($scope.directories);
+      var randomIndex = Math.floor(Math.random() * directories.length);
+      $scope.featuredDirectory = $scope.directories[directories[randomIndex]];
+    }
 
-    var featuredStoryUrls = Object.keys($scope.featuredStories);
-    var featuredStoryIndex = Math.floor(Math.random() *
-                                        featuredStoryUrls.length);
-    $scope.featuredStoryUrl = featuredStoryUrls[featuredStoryIndex];
+    var people = [];
+    for(cDevice in $scope.devices) {
+      beaver.addDeviceProperty(cDevice, 'featured', false);
+      if($scope.devices[cDevice].person === true) {
+        people.push(cDevice);
+      }
+    }
+    var featuredStoryIndex = Math.floor(Math.random() * people.length);
+    beaver.addDeviceProperty(people[featuredStoryIndex], 'featured', true);
   }
 
   setInterval(updateFeatured, 8000);
