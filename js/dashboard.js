@@ -103,7 +103,6 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     return false;
   }
 
-
   // Update the featured directory and story
   function updateFeatured() {
     var people = 0;
