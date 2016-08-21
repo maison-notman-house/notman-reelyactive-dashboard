@@ -45,12 +45,20 @@
               <img ng-src="{{featuredDirectory.imageUrl}}"
                    class="img-responsive" height="240px">
             </div>
-            <div ng-if="featuredDirectory" ng-repeat="(id, device) in featuredDirectory.devices | orderBy:'-person':false"
+            <!-- Seems ridiculous not to use orderBy 'person' in a single loop but can't get it to work -->
+            <div ng-if="featuredDirectory" ng-show="device.person"
+                 ng-repeat="(id, device) in featuredDirectory.devices"
                  style="float:left; height:300px">
                 <bubble ng-if="device.story" toggle="false"
                         json="device.story" size="240px"></bubble>
-              </div>
             </div>
+            <div ng-if="featuredDirectory" ng-hide="device.person"
+                 ng-repeat="(id, device) in featuredDirectory.devices" 
+                 style="float:left; height:300px">
+                <bubble ng-if="device.story" toggle="false"
+                        json="device.story" size="240px"></bubble>
+            </div>
+          </div>
         </div>
       </div>
     </div>
