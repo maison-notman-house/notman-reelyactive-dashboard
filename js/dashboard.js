@@ -60,6 +60,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.doughnutData = [ 0, 0, 0, 0 ];
   $scope.doughnutColors = [ '#83b7d1', '#0770a2', '#043851', '#ff6900' ];
   $scope.doughnutOptions = DOUGHNUT_OPTIONS;
+  $scope.numberOfDevices = 0;
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
