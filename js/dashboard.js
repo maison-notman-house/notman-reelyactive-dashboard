@@ -57,7 +57,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.featuredDirectory = null;
   $scope.doughnutLabels = [ '3', '2', '1', 'Cafe' ];
-  $scope.doughnutData = [ 0, 0, 0, 0 ];
+  $scope.doughnutData = [ 1, 1, 1, 1 ];
   $scope.doughnutColors = [ '#83b7d1', '#0770a2', '#043851', '#ff6900' ];
   $scope.doughnutOptions = DOUGHNUT_OPTIONS;
 
