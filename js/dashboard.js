@@ -56,6 +56,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
   $scope.featuredDirectory = null;
+  $scope.addFiller = true;
   $scope.doughnutLabels = [ '3', '2', '1', 'Cafe' ];
   $scope.doughnutData = [ 0, 0, 0, 0 ];
   $scope.doughnutColors = [ '#83b7d1', '#0770a2', '#043851', '#ff6900' ];
@@ -111,17 +112,16 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
   // Update the doughnut chart
   function updateDoughnut(event) {
-    /*$scope.doughnutData[0]*/ var third = getNumberOfDirectoryDevices('notman:third:west')
+    $scope.doughnutData[0] = getNumberOfDirectoryDevices('notman:third:west')
                          + getNumberOfDirectoryDevices('notman:third:centre')
                          + getNumberOfDirectoryDevices('notman:third:east');
-    /*$scope.doughnutData[1]*/ var second = getNumberOfDirectoryDevices('notman:second:west')
+    $scope.doughnutData[1] = getNumberOfDirectoryDevices('notman:second:west')
                          + getNumberOfDirectoryDevices('notman:second:centre')
                          + getNumberOfDirectoryDevices('notman:second:east');
-    /*$scope.doughnutData[2]*/ var first = getNumberOfDirectoryDevices('notman:first:west')
+    $scope.doughnutData[2] = getNumberOfDirectoryDevices('notman:first:west')
                          + getNumberOfDirectoryDevices('notman:first:centre')
                          + getNumberOfDirectoryDevices('notman:first:east');
-    /*$scope.doughnutData[3]*/ var cafe = getNumberOfDirectoryDevices('notman:cafe');
-    $scope.doughnutData = [ third, second, first, cafe ];
+    $scope.doughnutData[3] = getNumberOfDirectoryDevices('notman:cafe');
   }
 
   // Get the number of devices in the given directory
@@ -178,8 +178,14 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
         people.push(cDevice);
       }
     }
-    var featuredStoryIndex = Math.floor(Math.random() * people.length);
-    beaver.addDeviceProperty(people[featuredStoryIndex], 'featured', true);
+    if(people.length > 0) {
+      $scope.addFiller = false;
+      var featuredStoryIndex = Math.floor(Math.random() * people.length);
+      beaver.addDeviceProperty(people[featuredStoryIndex], 'featured', true);
+    }
+    else {
+      $scope.addFiller = true;
+    }
   }
 
   setInterval(updateFeatured, 8000);
