@@ -148,16 +148,22 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   // Update the featured directory and story
   function updateFeatured() {
     var people = 0;
+    var products = 0;
     var newFeaturedDirectory = $scope.featuredDirectory;
     for(cDirectory in $scope.directories) {
       var currentPeople = 0;
+      var currentProducts = 0;
       var currentDirectory = $scope.directories[cDirectory];
       for(cDevice in currentDirectory.devices) {
         if(currentDirectory.devices[cDevice].person) {
           currentPeople++;
         }
+        if(currentDirectory.devices[cDevice].product) {
+          currentProducts++;
+        }
       }
-      if((currentPeople > people) &&
+      if(((currentPeople > people) ||
+          ((people === 0) && (currentProducts > products))) &&
          (currentDirectory !== $scope.featuredDirectory)) {
         newFeaturedDirectory = currentDirectory;
       }
@@ -188,5 +194,5 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     }
   }
 
-  setInterval(updateFeatured, 8000);
+  setInterval(updateFeatured, 15000);
 });
