@@ -158,14 +158,14 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
         if(currentDirectory.devices[cDevice].person) {
           currentPeople++;
         }
-        if(currentDirectory.devices[cDevice].product) {
-          currentProducts++;
-        }
+        currentProducts++;
       }
       if(((currentPeople > people) ||
           ((people === 0) && (currentProducts > products))) &&
          (currentDirectory !== $scope.featuredDirectory)) {
         newFeaturedDirectory = currentDirectory;
+        people = currentPeople;
+        products = currentProducts;
       }
     }
     if(newFeaturedDirectory !== $scope.featuredDirectory) {
@@ -177,22 +177,24 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
       $scope.featuredDirectory = $scope.directories[directories[randomIndex]];
     }
 
-    var people = [];
+    var featuredStories = [];
     for(cDevice in $scope.devices) {
       beaver.addDeviceProperty(cDevice, 'featured', false);
       if($scope.devices[cDevice].person === true) {
-        people.push(cDevice);
+        featuredStories.push(cDevice);
       }
     }
-    if(people.length > 0) {
+    if(featuredStories.length > 0) {
       $scope.addFiller = false;
-      var featuredStoryIndex = Math.floor(Math.random() * people.length);
-      beaver.addDeviceProperty(people[featuredStoryIndex], 'featured', true);
+      var featuredStoryIndex = Math.floor(Math.random() *
+                                          featuredStories.length);
+      beaver.addDeviceProperty(featuredStories[featuredStoryIndex],
+                               'featured', true);
     }
     else {
       $scope.addFiller = true;
     }
   }
 
-  setInterval(updateFeatured, 15000);
+  setInterval(updateFeatured, 12000);
 });
