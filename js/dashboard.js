@@ -5,7 +5,7 @@
 
 
 // Constant definitions
-DEFAULT_SOCKET_URL = 'http://www.hyperlocalcontext.com/notman';
+DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
 MAX_RSSI = 255;
 DOUGHNUT_OPTIONS = {
   legend: {
