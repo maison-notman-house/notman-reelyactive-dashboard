@@ -26,6 +26,15 @@
         <div class="col-md-8">
           <div class="well blue-full" style="min-height:640px; max-height:640px; overflow:hidden">
             <div ng-show="addFiller">
+              <img class="img-responsive center-block"
+                   src="images/make-this-dashboard-great-again.png">
+              <h1 style="color:#fff" class="text-center"> 
+                <b>#HackTheHouse</b> 11-13 Nov.
+              </h1>
+              <h3 style="color:#fff" class="text-center">
+                github.com/maison-notman-house
+              </h3>
+              <!--
               <h1 style="color:#fff">
                 Soyez une bulle quand vous visitez la Maison Notman:
               </h1>
@@ -39,6 +48,7 @@
                 &nbsp; | &nbsp;
                 Or, better, integrate the reelyActive SDK into your app!
               </h3>
+              -->
             </div>
             <br><br>
             <bubble ng-repeat="(id, device) in devices" ng-if="device.person"
