@@ -6,7 +6,7 @@
 
 // Constant definitions
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
-UTC_OFFSET_MILLISECONDS = (5 * 3600 * 1000);
+UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
 
 
 /**
