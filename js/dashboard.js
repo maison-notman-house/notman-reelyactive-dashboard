@@ -6,6 +6,7 @@
 
 // Constant definitions
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
+UTC_OFFSET_MILLISECONDS = (5 * 3600 * 1000);
 
 
 /**
@@ -111,7 +112,10 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   // Update the time every second
   var tick = function() {
     var now = new Date();
-    $scope.clock = now.getHours() + 'h' + now.getMinutes();
+    if(now.getTimezoneOffset() === 0) {                     // Hack from UTC
+      now = new Date(Date.now() + UTC_OFFSET_MILLISECONDS); //   to Montreal
+    }                                                       //   if required
+    $scope.clock = now.getHours() + 'h' + ('0' + now.getMinutes()).slice(-2);
   }
   setInterval(tick, 1000);
 
