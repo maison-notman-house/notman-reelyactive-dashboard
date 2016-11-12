@@ -18,6 +18,15 @@ h2 {
   color: #ccc;
 }
 
+h3 {
+  color: #ccc;
+}
+
+.clock {
+  color: #ccc;
+  font-size: 10vw;
+}
+
 .left-column {
   background-color: #000;
   height: calc(100vh - 60px);
@@ -26,6 +35,10 @@ h2 {
 .main-column {
   background-color: #0770a2;
   height: calc(100vh - 60px);
+}
+
+.vertical-center {
+  line-height: calc(100vh - 60px);
 }
 
 .footer {
