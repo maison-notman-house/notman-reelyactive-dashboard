@@ -8,6 +8,7 @@
 NOTMAN_DIRECTORY_URL_ROOT = 'https://maison-notman-house.github.io/notman-occupants/';
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
 UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
+STORY_CYCLE_MILLISECONDS = 12000;
 
 
 /**
@@ -45,19 +46,13 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.numberOfDevices = 0;
   $scope.clock = '';
+  $scope.occupantUrls = [];
   $scope.featuredImgUrl;
   $scope.featuredName;
 
-  // Fetch all the stories
-  getOccupantsStories();
+  // Fetch all the occupants and their stories
+  getOccupants();
   
-  // TODO: make this part of a function
-  cormorant.getStory("https://maison-notman-house.github.io/notman-occupants/Person/Ritika_Dutt/", function(story, url) {
-    $scope.featuredImgUrl = story['@graph'][0]['schema:image'];
-    $scope.featuredName = story['@graph'][0]['schema:givenName'] + ' ' +
-                          story['@graph'][0]['schema:familyName'];
-  });
-
   // beaver.js listens on the websocket for events
   //beaver.listen(Socket);
   // Removed because Raspberry Pi was struggling with socket.io
@@ -124,30 +119,30 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     return false;
   }
 
-  // Fetch all the notman-occupants stories, one-by-one
-  function getOccupantsStories() {
-    var urls = [];
+  // Fetch all the notman-occupants and their stories, one-by-one
+  function getOccupants() {
     for(person in notman_people) {
-      urls.push(NOTMAN_DIRECTORY_URL_ROOT + notman_people[person]);
+      $scope.occupantUrls.push(NOTMAN_DIRECTORY_URL_ROOT +
+                               notman_people[person]);
     }
     for(organization in notman_organizations) {
-      urls.push(NOTMAN_DIRECTORY_URL_ROOT +
-                notman_organizations[organization]);
+      $scope.occupantUrls.push(NOTMAN_DIRECTORY_URL_ROOT +
+                               notman_organizations[organization]);
     }
 
-    getNextOccupantStory(urls, function() {
-      // TODO: kick something off?
+    getNextOccupantStory($scope.occupantUrls, 0, function() {
+      updateFeaturedStory();
+      setInterval(updateFeaturedStory, STORY_CYCLE_MILLISECONDS);
     });
   }
 
   // Recursively fetch occupant stories from an array of URLs
-  function getNextOccupantStory(urls, callback) {
-    if(urls.length === 0) {
+  function getNextOccupantStory(urls, index, callback) {
+    if(index >= urls.length) {
       return callback();
     }
-    var url = urls.shift();
-    cormorant.getStory(url, function(story, url) {
-      getNextOccupantStory(urls, callback);
+    cormorant.getStory(urls[index], function(story, url) {
+      getNextOccupantStory(urls, ++index, callback);
     });
   }
 
@@ -158,8 +153,23 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
       now = new Date(Date.now() + UTC_OFFSET_MILLISECONDS); //   to Montreal
     }                                                       //   if required
     $scope.clock = now.getHours() + 'h' + ('0' + now.getMinutes()).slice(-2);
-  }
+  };
   tick();
   setInterval(tick, 1000);
+
+  // Update the featured story
+  var updateFeaturedStory = function() {
+    if($scope.occupantUrls.length > 0) {
+      var randomIndex = Math.floor((Math.random() *
+                                    $scope.occupantUrls.length));
+      var url = $scope.occupantUrls[randomIndex];
+      var story = $scope.stories[url];
+      $scope.featuredImgUrl = story['@graph'][0]['schema:image'] ||
+                              story['@graph'][0]['schema:logo'];
+      $scope.featuredName = story['@graph'][0]['schema:givenName'] ||
+                            story['@graph'][0]['schema:name'];
+      console.log(randomIndex + $scope.featuredName);
+    }
+  };
 
 });
