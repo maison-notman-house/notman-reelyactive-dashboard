@@ -25,6 +25,7 @@ h3 {
 .clock {
   color: #ccc;
   font-size: 10vw;
+  margin-top: calc(((100vh - 60px) / 2) - 10vw);
 }
 
 .left-column {
@@ -35,10 +36,6 @@ h3 {
 .main-column {
   background-color: #0770a2;
   height: calc(100vh - 60px);
-}
-
-.vertical-center {
-  line-height: calc(100vh - 60px);
 }
 
 .img-featured {
