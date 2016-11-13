@@ -35,7 +35,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
  * DashCtrl Controller
  * Handles the manipulation of all variables accessed by the HTML view.
  */
-.controller('DashCtrl', function($scope, Socket, beaver, cormorant) {
+.controller('DashCtrl', function($scope, beaver, cormorant) {
 
   // Variables accessible in the HTML scope
   $scope.devices = beaver.getDevices();
@@ -55,7 +55,9 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   });
 
   // beaver.js listens on the websocket for events
-  beaver.listen(Socket);
+  //beaver.listen(Socket);
+  // Removed because Raspberry Pi was struggling with socket.io
+  // When reinstating, don't forget to include Socket in the controller above
 
   // Handle events pre-processed by beaver.js
   beaver.on('appearance', function(event) {
