@@ -5,6 +5,7 @@
 
 
 // Constant definitions
+NOTMAN_DIRECTORY_URL_ROOT = 'https://maison-notman-house.github.io/notman-occupants/';
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
 UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
 
@@ -46,6 +47,9 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.clock = '';
   $scope.featuredImgUrl;
   $scope.featuredName;
+
+  // Fetch all the stories
+  getOccupantsStories();
   
   // TODO: make this part of a function
   cormorant.getStory("https://maison-notman-house.github.io/notman-occupants/Person/Ritika_Dutt/", function(story, url) {
@@ -118,6 +122,33 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
       }
     }
     return false;
+  }
+
+  // Fetch all the notman-occupants stories, one-by-one
+  function getOccupantsStories() {
+    var urls = [];
+    for(person in notman_people) {
+      urls.push(NOTMAN_DIRECTORY_URL_ROOT + notman_people[person]);
+    }
+    for(organization in notman_organizations) {
+      urls.push(NOTMAN_DIRECTORY_URL_ROOT +
+                notman_organizations[organization]);
+    }
+
+    getNextOccupantStory(urls, function() {
+      // TODO: kick something off?
+    });
+  }
+
+  // Recursively fetch occupant stories from an array of URLs
+  function getNextOccupantStory(urls, callback) {
+    if(urls.length === 0) {
+      return callback();
+    }
+    var url = urls.shift();
+    cormorant.getStory(url, function(story, url) {
+      getNextOccupantStory(urls, callback);
+    });
   }
 
   // Update the time every second
