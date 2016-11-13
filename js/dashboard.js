@@ -18,26 +18,13 @@ STORY_CYCLE_MILLISECONDS = 12000;
  * - beaver, cormorant (reelyActive)
  * - socket.io (btford)
  */
-angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
-                             'reelyactive.cormorant'])
-
-
-/**
- * Socket Factory
- * Creates the websocket connection to the given URL using socket.io.
- */
-.factory('Socket', function(socketFactory) {
-  return socketFactory({
-    ioSocket: io.connect(DEFAULT_SOCKET_URL)
-  });
-})
-
+angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
 
 /**
  * DashCtrl Controller
  * Handles the manipulation of all variables accessed by the HTML view.
  */
-.controller('DashCtrl', function($scope, beaver, cormorant) {
+.controller('DashCtrl', function($scope, $interval, beaver, cormorant) {
 
   // Variables accessible in the HTML scope
   $scope.devices = beaver.getDevices();
@@ -132,7 +119,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
 
     getNextOccupantStory($scope.occupantUrls, 0, function() {
       updateFeaturedStory();
-      setInterval(updateFeaturedStory, STORY_CYCLE_MILLISECONDS);
+      $interval(updateFeaturedStory, STORY_CYCLE_MILLISECONDS);
     });
   }
 
@@ -155,7 +142,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     $scope.clock = now.getHours() + 'h' + ('0' + now.getMinutes()).slice(-2);
   };
   tick();
-  setInterval(tick, 1000);
+  $interval(tick, 1000);
 
   // Update the featured story
   var updateFeaturedStory = function() {
@@ -168,7 +155,6 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
                               story['@graph'][0]['schema:logo'];
       $scope.featuredName = story['@graph'][0]['schema:givenName'] ||
                             story['@graph'][0]['schema:name'];
-      console.log(randomIndex + $scope.featuredName);
     }
   };
 
