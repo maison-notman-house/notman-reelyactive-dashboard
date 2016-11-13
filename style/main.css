@@ -41,6 +41,14 @@ h3 {
   line-height: calc(100vh - 60px);
 }
 
+.name-box {
+  color: #fff;
+  font-weight: bold;
+  font-size: 8vh;
+  border-radius: 6vh;
+  background: #000;  
+}
+
 .footer {
   position: absolute;
   bottom: 0;

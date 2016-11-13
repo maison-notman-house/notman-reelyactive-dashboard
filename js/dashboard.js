@@ -44,6 +44,15 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
   $scope.stories = cormorant.getStories();
   $scope.numberOfDevices = 0;
   $scope.clock = '';
+  $scope.featuredImgUrl;
+  $scope.featuredName;
+  
+  // TODO: make this part of a function
+  cormorant.getStory("https://maison-notman-house.github.io/notman-occupants/Person/Ritika_Dutt/", function(story, url) {
+    $scope.featuredImgUrl = story['@graph'][0]['schema:image'];
+    $scope.featuredName = story['@graph'][0]['schema:givenName'] + ' ' +
+                          story['@graph'][0]['schema:familyName'];
+  });
 
   // beaver.js listens on the websocket for events
   beaver.listen(Socket);
@@ -117,6 +126,7 @@ angular.module('dashboard', ['btford.socket-io', 'reelyactive.beaver',
     }                                                       //   if required
     $scope.clock = now.getHours() + 'h' + ('0' + now.getMinutes()).slice(-2);
   }
+  tick();
   setInterval(tick, 1000);
 
 });
