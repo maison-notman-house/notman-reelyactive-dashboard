@@ -9,6 +9,7 @@ NOTMAN_DIRECTORY_URL_ROOT = 'https://maison-notman-house.github.io/notman-occupa
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
 UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
 STORY_CYCLE_MILLISECONDS = 12000;
+UNIQUE_STORY_RETRIES = 3;
 
 
 /**
@@ -34,6 +35,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   $scope.numberOfDevices = 0;
   $scope.clock = '';
   $scope.occupantUrls = [];
+  $scope.featuredUrl;
   $scope.featuredImgUrl;
   $scope.featuredName;
 
@@ -147,9 +149,21 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   // Update the featured story
   var updateFeaturedStory = function() {
     if($scope.occupantUrls.length > 0) {
-      var randomIndex = Math.floor((Math.random() *
-                                    $scope.occupantUrls.length));
-      var url = $scope.occupantUrls[randomIndex];
+      var randomIndex;
+      var url;
+
+      // Retry until we have a new story
+      for(var cRetry = 0; cRetry < UNIQUE_STORY_RETRIES; cRetry++) {
+        randomIndex = Math.floor((Math.random() *
+                                  $scope.occupantUrls.length));
+        console.log(randomIndex + ' ' + cRetry);
+        url = $scope.occupantUrls[randomIndex];
+        if(url !== $scope.featuredUrl) {
+          $scope.featuredUrl = url;
+          break;
+        }
+      }
+
       var story = $scope.stories[url];
       $scope.featuredImgUrl = story['@graph'][0]['schema:image'] ||
                               story['@graph'][0]['schema:logo'];
