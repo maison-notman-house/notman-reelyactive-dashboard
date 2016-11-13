@@ -41,12 +41,23 @@ h3 {
   line-height: calc(100vh - 60px);
 }
 
+.img-featured {
+  margin-top: 20px;
+  width: 60%;
+  position: relative;
+}
+
 .name-box {
   color: #fff;
   font-weight: bold;
   font-size: 8vh;
   border-radius: 6vh;
-  background: #000;  
+  width: 80%;
+  overflow: hidden;
+  margin: -5% 10% 0 10%;
+  background: #000; 
+  position: absolute;
+  z-index: 1000; 
 }
 
 .footer {
