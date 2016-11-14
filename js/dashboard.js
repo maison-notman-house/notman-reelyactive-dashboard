@@ -166,7 +166,8 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
 
       var story = $scope.stories[url];
       $scope.featuredImgUrl = story['@graph'][0]['schema:image'] ||
-                              story['@graph'][0]['schema:logo'];
+                              story['@graph'][0]['schema:logo'] ||
+                              'images/default-unsupported.png';
       $scope.featuredName = story['@graph'][0]['schema:givenName'] ||
                             story['@graph'][0]['schema:name'];
     }
