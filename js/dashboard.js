@@ -76,7 +76,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   // Update the device's story and add to occupants if it is a person
   function updateDeviceStory(deviceId, url) {
     cormorant.getStory(url, function(story, url) {
-      if(includesPerson(story)) {
+      if(includesPerson(story) && ($scope.occupantUrls.indexOf(url) < 0)) {
         $scope.occupantUrls.push(url);
         console.log('Adding occupant ' + url);
       }
