@@ -7,6 +7,8 @@
 // Constant definitions
 NOTMAN_DIRECTORY_URL_ROOT = 'https://maison-notman-house.github.io/notman-occupants/';
 DEFAULT_SOCKET_URL = 'https://www.hyperlocalcontext.com/notman';
+DEFAULT_POLLING_URL = 'https://www.hyperlocalcontext.com/contextat/directory/notman:cafe';
+DEFAULT_POLLING_MILLISECONDS = 60000;
 UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
 STORY_CYCLE_MILLISECONDS = 12000;
 UNIQUE_STORY_RETRIES = 3;
@@ -41,6 +43,9 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
 
   // Fetch all the occupants and their stories
   getOccupants();
+
+  // beaver.js polls contextual API for live occupants
+  beaver.poll(DEFAULT_POLLING_URL, DEFAULT_POLLING_MILLISECONDS);
   
   // beaver.js listens on the websocket for events
   //beaver.listen(Socket);
@@ -63,16 +68,20 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
 
   // Handle an event
   function handleEvent(event) {
-    //updateDeviceStory(event.deviceId, event.deviceUrl);
+    updateDeviceStory(event.deviceId, event.deviceUrl);
     //updateDirectoryStory(event.receiverDirectory, event.receiverUrl);
     $scope.numberOfDevices = Object.keys($scope.devices).length;
   }
 
-  // Update the device's story
+  // Update the device's story and add to occupants if it is a person
   function updateDeviceStory(deviceId, url) {
     cormorant.getStory(url, function(story, url) {
-      beaver.addDeviceProperty(deviceId, 'story', story);
-      beaver.addDeviceProperty(deviceId, 'person', includesPerson(story));
+      if(includesPerson(story)) {
+        $scope.occupantUrls.push(url);
+        console.log('Adding occupant ' + url);
+      }
+      //beaver.addDeviceProperty(deviceId, 'story', story);
+      //beaver.addDeviceProperty(deviceId, 'person', includesPerson(story));
     });
   }
 
