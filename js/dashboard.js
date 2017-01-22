@@ -40,6 +40,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   $scope.stats = beaver.getStats();
   $scope.stories = cormorant.getStories();
   $scope.numberOfDevices = 0;
+  $scope.numberOfPersonsAdvertising = 0;
   $scope.clock = '';
   $scope.occupantUrls = [];
   $scope.featuredUrl;
@@ -78,11 +79,12 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
     $scope.numberOfDevices = Object.keys($scope.devices).length;
   }
 
-  // Update the device's story and add to occupants if it is a person
+  // Update the device's story and add to occupants if it is a new person
   function updateDeviceStory(deviceId, url) {
     cormorant.getStory(url, function(story, url) {
       if(includesPerson(story) && ($scope.occupantUrls.indexOf(url) < 0)) {
         $scope.occupantUrls.push(url);
+        $scope.numberOfPersonsAdvertising++;
         console.log('Adding occupant ' + url);
       }
       //beaver.addDeviceProperty(deviceId, 'story', story);
