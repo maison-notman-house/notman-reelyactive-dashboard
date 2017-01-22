@@ -12,6 +12,10 @@ DEFAULT_POLLING_MILLISECONDS = 60000;
 UTC_OFFSET_MILLISECONDS = (-5 * 3600 * 1000);
 STORY_CYCLE_MILLISECONDS = 12000;
 UNIQUE_STORY_RETRIES = 3;
+DISPLAY_MAIN = 'main';
+DISPLAY_MAIN_MILLISECONDS = 108000;
+DISPLAY_ADVERTISE = 'advertise';
+DISPLAY_ADVERTISE_MILLISECONDS = 12000;
 
 
 /**
@@ -30,6 +34,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
 .controller('DashCtrl', function($scope, $interval, beaver, cormorant) {
 
   // Variables accessible in the HTML scope
+  $scope.display = DISPLAY_MAIN;
   $scope.devices = beaver.getDevices();
   $scope.directories = beaver.getDirectories();
   $scope.stats = beaver.getStats();
@@ -181,5 +186,22 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
                             story['@graph'][0]['schema:name'];
     }
   };
+
+  // Update the content of the display
+  function updateDisplay() {
+    $interval.cancel($scope.intervalPromise);
+    if($scope.display === DISPLAY_MAIN) {
+      $scope.display = DISPLAY_ADVERTISE;
+      $scope.intervalPromise = $interval(updateDisplay,
+                                         DISPLAY_ADVERTISE_MILLISECONDS);
+    }
+    else {
+      $scope.display = DISPLAY_MAIN;
+      $scope.intervalPromise = $interval(updateDisplay,
+                                         DISPLAY_MAIN_MILLISECONDS);
+    }
+  }
+
+  $scope.intervalPromise = $interval(updateDisplay, DISPLAY_MAIN_MILLISECONDS);
 
 });

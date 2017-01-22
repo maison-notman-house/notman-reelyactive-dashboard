@@ -10,12 +10,13 @@ body {
 }
 
 h1 {
-  color: #ccc;
-  font-size: 8em;
+  color: #fff;
+  font-size: 12em;
 }
 
 h2 {
-  color: #ccc;
+  color: #eee;
+  font-size: 8em;
 }
 
 h3 {
@@ -35,6 +36,11 @@ h3 {
 
 .main-column {
   background-color: #0770a2;
+  height: calc(100vh - 60px);
+}
+
+.right-column {
+  background-color: #777;
   height: calc(100vh - 60px);
 }
 

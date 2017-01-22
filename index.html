@@ -16,7 +16,7 @@
   <body ng-app="dashboard">
 	  <div ng-controller="DashCtrl" class="container-fluid">
       <!----- BEGIN CONTENT SECTION --------------------------------------->
-      <div class="row">
+      <div class="row" ng-show="display === 'main'">
         <div class="col-md-4 left-column">
           <div class="text-center clock">{{clock}}</div>
         </div>
@@ -24,6 +24,18 @@
           <img ng-src="{{featuredImgUrl}}"
                class="img-featured img-circle img-responsive center-block">
           <div class="name-box text-center"> {{featuredName}} </div>
+        </div>
+      </div>
+      <div class="row" ng-show="display === 'advertise'">
+        <div class="col-md-8 main-column">
+          <h1 class="text-center"> "Advertise" yourself <br>
+                                   &laquo;Publie&raquo; ta pr&eacute;sence </h1>
+          <br><br><hr>
+          <h2 class="text-center"> <b>reelyApp</b> for iOS & Android </h2>
+          <hr><br><br>
+        </div>
+        <div class="col-md-4 right-column">
+          <img src="images/reelyApp.gif" class="img-responsive center-block">
         </div>
       </div>
       <!----- END CONTENT SECTION ----------------------------------------->
