@@ -46,6 +46,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   $scope.featuredUrl;
   $scope.featuredImgUrl;
   $scope.featuredName;
+  $scope.nextFeaturedUrl = null;
 
   // Fetch all the occupants and their stories
   getOccupants();
@@ -84,6 +85,7 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
     cormorant.getStory(url, function(story, url) {
       if(includesPerson(story) && ($scope.occupantUrls.indexOf(url) < 0)) {
         $scope.occupantUrls.push(url);
+        $scope.nextFeaturedUrl = url;
         $scope.numberOfPersonsAdvertising++;
         console.log('Adding occupant ' + url);
       }
@@ -166,17 +168,19 @@ angular.module('dashboard', ['reelyactive.beaver', 'reelyactive.cormorant'])
   var updateFeaturedStory = function() {
     if($scope.occupantUrls.length > 0) {
       var randomIndex;
-      var url;
+      var url = $scope.nextFeaturedUrl;
+      $scope.nextFeaturedUrl = null;
 
-      // Retry until we have a new story
-      for(var cRetry = 0; cRetry < UNIQUE_STORY_RETRIES; cRetry++) {
-        randomIndex = Math.floor((Math.random() *
-                                  $scope.occupantUrls.length));
-        console.log(randomIndex + ' ' + cRetry);
-        url = $scope.occupantUrls[randomIndex];
-        if(url !== $scope.featuredUrl) {
-          $scope.featuredUrl = url;
-          break;
+      // No "next" URL, retry until we have a new story
+      if(!url) {
+        for(var cRetry = 0; cRetry < UNIQUE_STORY_RETRIES; cRetry++) {
+          randomIndex = Math.floor((Math.random() *
+                                    $scope.occupantUrls.length));
+          url = $scope.occupantUrls[randomIndex];
+          if(url !== $scope.featuredUrl) {
+            $scope.featuredUrl = url;
+            break;
+          }
         }
       }
 
