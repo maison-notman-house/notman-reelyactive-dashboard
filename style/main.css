@@ -65,6 +65,11 @@ h3 {
   z-index: 1000; 
 }
 
+.cta-header {
+  background-color: #000;
+  width: 100%;
+}
+
 .footer {
   position: absolute;
   bottom: 0;
